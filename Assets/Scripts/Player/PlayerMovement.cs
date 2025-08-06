@@ -1,30 +1,58 @@
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour {
-    public float speed = 4f;
-    public float gravity = -9.81f;
-    public Transform cameraTransform;
+[RequireComponent(typeof(CharacterController))]
+public class PlayerMovement : MonoBehaviour
+{
+    [SerializeField] private float baseMoveSpeed = 5f;
 
-    private CharacterController controller;
-    private Vector3 velocity;
+    private CharacterController characterController;
+    private Vector3 moveDirection = Vector3.zero;
 
-    void Start() {
-        controller = GetComponent<CharacterController>();
-        Cursor.lockState = CursorLockMode.Locked;
+    public float CurrentMoveSpeed { get; private set; }
+
+    private void Awake()
+    {
+        // Singleton pattern (optional), or protect from duplicate instances
+        if (FindObjectsOfType<PlayerMovement>().Length > 1)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        DontDestroyOnLoad(gameObject);
+        characterController = GetComponent<CharacterController>();
+        CurrentMoveSpeed = baseMoveSpeed;
     }
 
-    void Update() {
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+    private void Update()
+    {
+        HandleMovement();
+    }
 
-        Vector3 move = transform.right * x + transform.forward * z;
-        controller.Move(move * speed * Time.deltaTime);
+    private void HandleMovement()
+    {
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveZ = Input.GetAxisRaw("Vertical");
 
-        velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+        Vector3 input = new Vector3(moveX, 0, moveZ).normalized;
+        moveDirection = transform.TransformDirection(input) * CurrentMoveSpeed;
 
-        // Mouse look
-        float mouseX = Input.GetAxis("Mouse X") * 2f;
-        transform.Rotate(Vector3.up * mouseX);
+        characterController.SimpleMove(moveDirection);
+    }
+
+    public void ApplySpeedModifier(float multiplier)
+    {
+        CurrentMoveSpeed = baseMoveSpeed * multiplier;
+    }
+
+    public void ResetSpeed()
+    {
+        CurrentMoveSpeed = baseMoveSpeed;
+    }
+
+    public void SetSpeed(float newSpeed)
+    {
+        baseMoveSpeed = newSpeed;
+        CurrentMoveSpeed = newSpeed;
     }
 }
