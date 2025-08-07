@@ -1,16 +1,26 @@
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class HotbarController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private List<Image> slotIcons;
+
+    public void SetSlotIcon(int index, Sprite icon)
     {
-        
+        if (index >= 0 && index < slotIcons.Count)
+        {
+            slotIcons[index].sprite = icon;
+            slotIcons[index].enabled = icon != null;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ClearSlot(int index)
     {
-        
+        if (index >= 0 && index < slotIcons.Count)
+        {
+            slotIcons[index].sprite = null;
+            slotIcons[index].enabled = false;
+        }
     }
 }
