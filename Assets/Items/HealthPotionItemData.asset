@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Health Potion
   itemType: 2
-  prefab: {fileID: 2139780847948606993, guid: 5f61df2d3661ab04eb8ad910cea15882, type: 3}
-  icon: {fileID: 0}
+  prefab: {fileID: 2432668219384409712, guid: 9ec8422be7d3ab04a995b0451cd2306c, type: 3}
+  icon: {fileID: 21300000, guid: 66bcd660efa9d2c43ab2d25cab6e5a83, type: 3}

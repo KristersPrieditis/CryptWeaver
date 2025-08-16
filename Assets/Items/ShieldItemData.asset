@@ -15,4 +15,4 @@ MonoBehaviour:
   itemName: Shield
   itemType: 1
   prefab: {fileID: 6650075830648586338, guid: c1daadd11388cbc4f90a478d3a0a8416, type: 3}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 835b9d70aa7b8bf4a92e573127a62249, type: 3}

@@ -15,4 +15,4 @@ MonoBehaviour:
   itemName: Sword
   itemType: 0
   prefab: {fileID: 3138986338540543549, guid: 8795b2c3622a15241aed04b586c0c6ec, type: 3}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: b427479c20f69e9459e5d8e5a7804690, type: 3}
