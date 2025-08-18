@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 4013355196521111491}
   - component: {fileID: 4609962973780262029}
   - component: {fileID: 4800253626280367978}
+  - component: {fileID: 1669114152569127454}
   m_Layer: 6
   m_Name: ShieldTestPrefab
   m_TagString: Untagged
@@ -172,8 +173,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.7197943, y: 0.80656016, z: 0.5549816}
-  m_Center: {x: -0.1935308, y: -0.3398686, z: 0.29620427}
+  m_Size: {x: 0.7150488, y: 0.80656016, z: 0.5041027}
+  m_Center: {x: -0.1806891, y: -0.3398686, z: 0.29408514}
 --- !u!54 &4609962973780262029
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -214,3 +215,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemData: {fileID: 11400000, guid: 523262f5043073845925864b5d3e8b56, type: 2}
+--- !u!114 &1669114152569127454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6650075830648586338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8dc7a6d9ae97ab49a59037646c42a3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  raiseLerp: 12
+  raisedOffsetEuler: {x: 25, y: -25, z: 0}
+  invertOffset: 1

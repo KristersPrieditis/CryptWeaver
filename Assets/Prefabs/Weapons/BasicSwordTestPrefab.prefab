@@ -24,13 +24,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2512006226495650888}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.085, y: -1.734, z: -0.061}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -0.009999961, y: -1.37, z: -0.37499988}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.253485}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2443084895626123178}
-  m_Father: {fileID: 3855901657336726838}
+  m_Father: {fileID: 2114950612579531018}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &3138986338540543549
 GameObject:
@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 5576309659997546616}
   - component: {fileID: 2068502439488252015}
   - component: {fileID: 1876797874476501812}
+  - component: {fileID: -4396038051544087367}
   m_Layer: 6
   m_Name: BasicSwordTestPrefab
   m_TagString: Untagged
@@ -64,7 +65,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2997041055618557682}
+  - {fileID: 2114950612579531018}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &5576309659997546616
@@ -128,6 +129,29 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.072307825, y: 0.78722644, z: 0.7773051}
   m_Center: {x: 0.08936489, y: -0.15745223, z: 0.51136136}
+--- !u!114 &-4396038051544087367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3138986338540543549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 130da8cf78983da41a0b3ff649e58b82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 25
+  swingDuration: 0.3
+  cooldown: 0.35
+  pivot: {fileID: 2114950612579531018}
+  hitbox: {fileID: 3331025829926318829}
+  swingAxis: 1
+  customAxisLocal: {x: 0.7, y: 0.3, z: 0}
+  backswingAngle: -40
+  forwardAngle: 40
+  mirrorOnLeftHand: 1
+  invertDirection: 0
 --- !u!1 &6868477317915919505
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,3 +238,59 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &8772918440782131824
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2114950612579531018}
+  - component: {fileID: 3331025829926318829}
+  m_Layer: 6
+  m_Name: Hilt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2114950612579531018
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8772918440782131824}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.095, y: -0.364, z: 0.314}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2997041055618557682}
+  m_Father: {fileID: 3855901657336726838}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &3331025829926318829
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8772918440782131824}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: -0.01, y: 0.34, z: 0.42}

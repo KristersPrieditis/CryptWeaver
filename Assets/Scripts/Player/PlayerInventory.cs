@@ -111,11 +111,21 @@ public class PlayerInventory : MonoBehaviour
     {
         DropFromHand(equipment, lastActiveHand);
     }
-    
+
     static void SetLayerRecursive(GameObject go, int layer)
     {
         go.layer = layer;
-            foreach (Transform t in go.GetComponentsInChildren<Transform>(true))
-        t.gameObject.layer = layer;
+        foreach (Transform t in go.GetComponentsInChildren<Transform>(true))
+            t.gameObject.layer = layer;
     }
+    
+    public void ConsumeFromHand(PlayerEquipment equipment, HandSide side)
+    {
+        int slotIndex = side == HandSide.Left ? equippedLeft : equippedRight;
+        if (slotIndex == -1) return;
+        equipment.Unequip(side);
+        slots[slotIndex] = null;
+        if (side == HandSide.Left) equippedLeft = -1; else equippedRight = -1;
+    }
+
 }
