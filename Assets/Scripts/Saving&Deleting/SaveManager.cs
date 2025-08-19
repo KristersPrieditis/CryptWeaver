@@ -1,10 +1,8 @@
-// SaveManager.cs  (sqlite-net version)
-// Requires the "SQLite" plugin (sqlite_csharp) you have in Assets/SQLite
 using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using SQLite; // <-- IMPORTANT: this is the sqlite-net namespace
+using SQLite;
 
 public static class SaveManager
 {
@@ -78,41 +76,58 @@ public static class SaveManager
         return true;
     }
 
-    public static bool TryLoadIntoPlayer(PlayerInventory inv, PlayerStats stats, Transform player)
+public static bool TryLoadIntoPlayer(PlayerInventory inv, PlayerStats stats, Transform player, bool applyPosition)
+{
+    var row = Conn.Find<SaveRow>("Autosave");
+    if (row == null) return false;
+
+    // 1) Position (optional)
+    if (applyPosition && player)
     {
-        var row = Conn.Find<SaveRow>("Autosave");
-        if (row == null) return false;
-
-        // position (optional; you usually use SpawnPoints)
-        if (player)
-        {
-            var cc = player.GetComponent<CharacterController>();
-            if (cc) cc.enabled = false;
-            player.position = new Vector3(row.Px, row.Py, row.Pz);
-            if (cc) cc.enabled = true;
-        }
-
-        if (stats) stats.Heal(stats.MaxHealth); // or set directly if you add a setter
-
-        if (inv)
-        {
-            var db = ItemDatabase.LoadDefault();
-            for (int i = 0; i < inv.slots.Length; i++) inv.slots[i] = null;
-            if (!string.IsNullOrEmpty(row.Inventory))
-            {
-                var parts = row.Inventory.Split('|');
-                for (int i = 0; i < inv.slots.Length && i < parts.Length; i++)
-                {
-                    var key = parts[i];
-                    if (string.IsNullOrEmpty(key)) continue;
-                    inv.slots[i] = db?.GetById(key) ?? db?.GetByName(key);
-                }
-            }
-            inv.equippedLeft = row.EquippedLeft;
-            inv.equippedRight = row.EquippedRight;
-        }
-        return true;
+        var cc = player.GetComponent<CharacterController>();
+        if (cc) cc.enabled = false;
+        player.position = new Vector3(row.Px, row.Py, row.Pz);
+        if (cc) cc.enabled = true;
     }
+
+    // 2) Health
+    if (stats)
+    {
+        int delta = row.Health - stats.CurrentHealth;
+        if (delta > 0) stats.Heal(delta);
+        else if (delta < 0) stats.TakeDamage(-delta);
+    }
+
+    // 3) Inventory + equipped indices
+    if (inv)
+    {
+        var db = ItemDatabase.LoadDefault();
+        for (int i = 0; i < inv.slots.Length; i++) inv.slots[i] = null;
+
+        if (!string.IsNullOrEmpty(row.Inventory))
+        {
+            var parts = row.Inventory.Split('|');
+            for (int i = 0; i < inv.slots.Length && i < parts.Length; i++)
+            {
+                var key = parts[i];
+                if (string.IsNullOrEmpty(key)) { inv.slots[i] = null; continue; }
+                var found = db?.GetById(key) ?? db?.GetByName(key);
+#if UNITY_EDITOR
+                if (!found) Debug.LogWarning($"[Load] Missing item '{key}' in ItemDatabase.");
+#endif
+                inv.slots[i] = found;
+            }
+        }
+
+        inv.equippedLeft  = row.EquippedLeft;
+        inv.equippedRight = row.EquippedRight;
+
+        Debug.Log($"[Load] {row.Scene}@{row.SpawnId} inv='{row.Inventory}' " +
+                  $"left={inv.equippedLeft} right={inv.equippedRight}");
+    }
+
+    return true;
+}
 
     public static void DeleteSave()
     {

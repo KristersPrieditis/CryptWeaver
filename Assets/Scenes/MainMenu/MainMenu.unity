@@ -876,6 +876,7 @@ MonoBehaviour:
   quitButton: {fileID: 2066536135}
   firstGameSceneName: FirstRoom
   firstSpawnId: StartSpawn
+  persistentRigPrefab: {fileID: 2394066189822585514, guid: 5c284e627b6d014439dee217b7e2400f, type: 3}
 --- !u!1001 &229620168
 PrefabInstance:
   m_ObjectHideFlags: 0

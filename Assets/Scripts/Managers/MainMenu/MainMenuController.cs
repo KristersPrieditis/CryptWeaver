@@ -12,7 +12,10 @@ public class MainMenuController : MonoBehaviour
 
     [Header("New Game target")]
     [SerializeField] private string firstGameSceneName = "FirstRoom";
-    [SerializeField] private string firstSpawnId = "StartSpawn"; // <- define it here
+    [SerializeField] private string firstSpawnId = "StartSpawn";
+
+    [Header("Persistent Rig (Player+UI prefab)")]
+    [SerializeField] private GameObject persistentRigPrefab; // root has RigPersist; child Player has SceneSpawnPlacer
 
     void Awake()
     {
@@ -24,24 +27,41 @@ public class MainMenuController : MonoBehaviour
         if (continueButton) continueButton.interactable = hasSave;
     }
 
+    // ===== Buttons =====
+
     void HandleContinue()
     {
         if (!SaveManager.LoadProgress(out var scene, out var spawn))
         {
-            HandleNewGame(); // fallback
+            HandleNewGame();
             return;
         }
 
-        DestroyPersistents();
-        if (!string.IsNullOrEmpty(spawn)) SceneSpawnRouter.SetNext(spawn);
+        EnsureRigExists();                           // make sure Player+UI rig exists
+        if (!string.IsNullOrEmpty(spawn))
+            SceneSpawnRouter.SetNext(spawn);
+
+        // Apply save to the rig after the scene loads
+        var applier = new GameObject("ApplySaveOnce").AddComponent<ApplySaveOnLoadOnce>();
+        applier.useSavedPosition = false;            // true = use exact saved coords; false = use SpawnPoint
+
+#if UNITY_EDITOR
+        UnityEditor.Selection.activeObject = null;
+#endif
         SceneManager.LoadScene(scene);
     }
 
     void HandleNewGame()
     {
-        SaveManager.DeleteSave();
-        DestroyPersistents();
-        if (!string.IsNullOrEmpty(firstSpawnId)) SceneSpawnRouter.SetNext(firstSpawnId);
+        SaveManager.DeleteSave();                    // wipe old progress
+        CreateRigFresh();                            // destroy old rig (if any) + spawn a fresh one
+
+        if (!string.IsNullOrEmpty(firstSpawnId))
+            SceneSpawnRouter.SetNext(firstSpawnId);
+
+#if UNITY_EDITOR
+        UnityEditor.Selection.activeObject = null;
+#endif
         SceneManager.LoadScene(firstGameSceneName);
     }
 
@@ -54,31 +74,43 @@ public class MainMenuController : MonoBehaviour
 #endif
     }
 
-    static void DestroyPersistents()
+    // ===== Rig helpers =====
+
+    static bool HasRig() =>
+        Object.FindObjectsByType<RigPersist>(FindObjectsSortMode.None).Length > 0;
+
+    void EnsureRigExists()
+    {
+        if (HasRig()) return;
+        if (!persistentRigPrefab)
+        {
+            Debug.LogError("MainMenuController: persistentRigPrefab not assigned.");
+            return;
+        }
+        var go = Instantiate(persistentRigPrefab);
+        go.name = "MortisPersistentRig";
+    }
+
+    void CreateRigFresh()
+    {
+        DestroyRigIfAny();
+        EnsureRigExists();
+    }
+
+    static void DestroyRigIfAny()
     {
         var toDestroy = new List<GameObject>();
+        foreach (var r in Object.FindObjectsByType<RigPersist>(FindObjectsSortMode.None))
+            if (r) toDestroy.Add(r.gameObject);
 
-        var players = Object.FindObjectsByType<PlayerPersist>(FindObjectsSortMode.None);
-        foreach (var p in players) if (p) toDestroy.Add(p.gameObject);
-
-        var uis = Object.FindObjectsByType<UIPersist>(FindObjectsSortMode.None);
-        foreach (var u in uis) if (u) toDestroy.Add(u.gameObject);
-
-        // Clear next-spawn handoff
         SceneSpawnRouter.Clear();
 
 #if UNITY_EDITOR
-        // If the Inspector is selecting one of these, deselect to avoid editor exceptions
         if (UnityEditor.Selection.activeGameObject &&
             toDestroy.Contains(UnityEditor.Selection.activeGameObject))
-        {
             UnityEditor.Selection.activeGameObject = null;
-        }
-        // Also clear any active Object selection just in case
         UnityEditor.Selection.activeObject = null;
 #endif
-
-        // Destroy at end of frame (safe in play mode)
         foreach (var go in toDestroy) if (go) Object.Destroy(go);
     }
 }
