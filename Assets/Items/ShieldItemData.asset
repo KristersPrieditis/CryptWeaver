@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc1961c30d8fc4e459a94a5121ea6198, type: 3}
   m_Name: ShieldItemData
   m_EditorClassIdentifier: 
+  itemId: basic.shield.01
   itemName: Shield
-  itemType: 1
-  prefab: {fileID: 6650075830648586338, guid: c1daadd11388cbc4f90a478d3a0a8416, type: 3}
   icon: {fileID: 21300000, guid: 835b9d70aa7b8bf4a92e573127a62249, type: 3}
+  prefab: {fileID: 6650075830648586338, guid: c1daadd11388cbc4f90a478d3a0a8416, type: 3}
+  itemType: 1
