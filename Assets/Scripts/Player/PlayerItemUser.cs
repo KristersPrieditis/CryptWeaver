@@ -3,29 +3,30 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerEquipment))]
 public class PlayerItemUser : MonoBehaviour
 {
-    public PlayerEquipment equipment;
-    public PlayerInventory inventory;
-    public PlayerStats stats;
-    public Transform cameraTransform;     // assign Main Camera
-    public UIOverlayToggle overlayToggle; // optional: so clicks don't fire when Tab overlay is open
+    public PlayerEquipment equipment;       // hand mounts / equipped instances
+    public PlayerInventory inventory;       // 6-slot hotbar state
+    public PlayerStats stats;               // health
+    public Transform cameraTransform;       // used for item forward (defaults to Camera.main)
+    public UIOverlayToggle overlayToggle;   // if overlay is up (Tab), ignore clicks
 
     [Header("Shield")]
-    [Range(0f, 1f)] public float blockDamageMultiplier = 0.4f;
+    [Range(0f, 1f)] public float blockDamageMultiplier = 0.4f; // damage taken while blocking
 
     void Awake()
     {
-        if (!equipment) equipment = GetComponent<PlayerEquipment>();
-        if (!inventory) inventory = GetComponent<PlayerInventory>();
-        if (!stats)     stats     = GetComponent<PlayerStats>();
+        // Auto-wire if I forgot to hook these in the prefab
+        if (!equipment)        equipment = GetComponent<PlayerEquipment>();
+        if (!inventory)        inventory = GetComponent<PlayerInventory>();
+        if (!stats)            stats     = GetComponent<PlayerStats>();
         if (!cameraTransform && Camera.main) cameraTransform = Camera.main.transform;
     }
 
     void Update()
     {
-        // Skip input while overlay (Tab) is open
+        // Don’t swing/block while the overlay is open
         if (overlayToggle && overlayToggle.IsOpen) return;
 
-        // SWAPPED mapping:
+        // Input map (intentional):
         // LMB -> RIGHT hand
         if (Input.GetMouseButtonDown(0)) UseStart(HandSide.Right);
         if (Input.GetMouseButtonUp(0))   UseEnd(HandSide.Right);
@@ -40,15 +41,16 @@ public class PlayerItemUser : MonoBehaviour
         var inst = equipment.GetInstance(side);
         if (!inst) return;
 
+        // Find IUsableItem even if it lives on a disabled child
         var usable =
             inst.GetComponent<IUsableItem>() ??
-            inst.GetComponentInChildren<IUsableItem>(true);  // <-- includeInactive
+            inst.GetComponentInChildren<IUsableItem>(true);
 
         if (usable == null)
-            {
-                Debug.LogWarning($"No IUsableItem found on equipped {inst.name} ({side} hand).");
-                return;
-            }
+        {
+            Debug.LogWarning($"No IUsableItem found on equipped {inst.name} ({side} hand).");
+            return;
+        }
         usable.OnUseStart(this, side);
     }
 
@@ -59,10 +61,11 @@ public class PlayerItemUser : MonoBehaviour
 
         var usable =
             inst.GetComponent<IUsableItem>() ??
-            inst.GetComponentInChildren<IUsableItem>(true);  // <-- includeInactive
+            inst.GetComponentInChildren<IUsableItem>(true);
 
         usable?.OnUseEnd(this, side);
     }
 
+    // Helper for items that need a forward vector (sword swing, etc.)
     public Vector3 Forward => cameraTransform ? cameraTransform.forward : transform.forward;
 }

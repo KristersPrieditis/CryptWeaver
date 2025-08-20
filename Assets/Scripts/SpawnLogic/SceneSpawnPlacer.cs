@@ -9,14 +9,18 @@ public class SceneSpawnPlacer : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // No handoff? Then we don't move the player.
         if (string.IsNullOrEmpty(SceneSpawnRouter.NextSpawnId)) return;
 
         var wanted = SceneSpawnRouter.NextSpawnId;
+
+        // Look for a SpawnPoint in this scene that matches the id we were handed
         var points = Object.FindObjectsByType<SpawnPoint>(FindObjectsSortMode.None);
         foreach (var sp in points)
         {
             if (sp.spawnId == wanted)
             {
+                // CharacterController hates teleports while enabled, so toggle it off→on
                 var cc = GetComponent<CharacterController>();
                 if (cc) cc.enabled = false;
                 transform.SetPositionAndRotation(sp.transform.position, sp.transform.rotation);
@@ -24,6 +28,8 @@ public class SceneSpawnPlacer : MonoBehaviour
                 break;
             }
         }
+
+        // One-shot mailbox — clear after use
         SceneSpawnRouter.Clear();
     }
 }

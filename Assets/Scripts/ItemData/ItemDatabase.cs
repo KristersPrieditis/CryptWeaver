@@ -4,16 +4,18 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ItemDatabase", menuName = "MORTIS/Item Database")]
 public class ItemDatabase : ScriptableObject
 {
-    public List<ItemData> items = new();
+    public List<ItemData> items = new();  // drag all ItemData here
 
+    // quick lookups built on enable
     Dictionary<string, ItemData> _byId;
     Dictionary<string, ItemData> _byName;
 
     void OnEnable()
     {
-        _byId = new Dictionary<string, ItemData>(System.StringComparer.Ordinal);
+        _byId   = new Dictionary<string, ItemData>(System.StringComparer.Ordinal);
         _byName = new Dictionary<string, ItemData>(System.StringComparer.Ordinal);
 
+        // build maps: prefer itemId, fallback to itemName
         foreach (var item in items)
         {
             if (!item) continue;
@@ -28,6 +30,6 @@ public class ItemDatabase : ScriptableObject
     public ItemData GetByName(string name) =>
         (name != null && _byName.TryGetValue(name, out var d)) ? d : null;
 
-    // Convenience: loads from Resources/ItemDatabase.asset
+    // Convenience: must live at Assets/Resources/ItemDatabase.asset
     public static ItemDatabase LoadDefault() => Resources.Load<ItemDatabase>("ItemDatabase");
 }

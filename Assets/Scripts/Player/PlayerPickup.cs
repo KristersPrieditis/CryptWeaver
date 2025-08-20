@@ -2,34 +2,39 @@ using UnityEngine;
 
 public class PlayerPickup : MonoBehaviour
 {
-    public float range = 2.5f;
-    public LayerMask interactMask;       // include both: Item + Door/Interactable layers
-    public PlayerInventory inventory;    // drag from Player
-    public PlayerEquipment equipment;    // drag from Player
-    public Transform cam;                // drag Main Camera (or it will auto-find)
+    public float range = 2.5f;                 // how far the E-ray reaches
+    public LayerMask interactMask;             // Items + Doors/Interactables layers
+    public PlayerInventory inventory;          // hooked to the rig's inventory
+    public PlayerEquipment equipment;          // hooked to the rig's equipment
+    public Transform cam;                      // camera used for the ray (defaults to Camera.main)
 
-    void Awake() { if (!cam && Camera.main) cam = Camera.main.transform; }
+    void Awake()
+    {
+        // If not wired in the prefab, grab the main camera at runtime
+        if (!cam && Camera.main) cam = Camera.main.transform;
+    }
 
     void Update()
     {
+        // Only act on E press, and only if we have a camera to ray from
         if (!Input.GetKeyDown(KeyCode.E) || !cam) return;
 
         Ray ray = new Ray(cam.position, cam.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, range, interactMask))
         {
-            // 1) Door?
+            // Door gets priority: if we hit a door, try to open and we're done
             var door = hit.collider.GetComponentInParent<DoorSceneLoader>();
-            if (door) { door.TryOpen(inventory, equipment); return; }
+            if (door)
+            {
+                door.TryOpen(inventory, equipment);
+                return;
+            }
 
-            // 2) Pickup item?
+            // Otherwise, see if it's a pickable item and grab it
             var pickup = hit.collider.GetComponentInParent<PickupItems>();
             if (pickup)
             {
-                // Use the overload your project has:
-                // If your PickupItems.PickUp takes inventory:
                 pickup.PickUp(inventory);
-                // If it takes equipment instead, use:
-                // pickup.PickUp(equipment);
                 return;
             }
         }
